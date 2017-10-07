@@ -1,0 +1,62 @@
+group 'us.n8l'
+version '0.1.0-SNAPSHOT'
+
+buildscript {
+    // y u no like camelcase 'kotlinVersion' ?
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'application'
+
+mainClassName = 'us.n8l.links.Bootstrap'
+compileJava.options.encoding = 'UTF-8'
+def jettyVersion = '9.4.7.v20170914'
+
+dependencies {
+    compile 'com.google.guava:guava:23.0'
+    compile 'org.apache.commons:commons-lang3:3.6'
+    compile 'org.apache.commons:commons-collections4:4.1'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'ch.qos.logback:logback-core:1.2.3'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'com.h2database:h2:1.4.196'
+    compile "org.eclipse.jetty:jetty-server:$jettyVersion"
+    compile "org.eclipse.jetty:jetty-servlet:$jettyVersion"
+    testCompile 'junit:junit:4.12'
+}
+
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+run {
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
+}
